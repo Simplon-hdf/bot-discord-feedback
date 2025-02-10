@@ -1,0 +1,13 @@
+services:
+  bot-dev:
+    container_name: bot-feedback-dev
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    ports:
+      - "8000:3000"
+    environment:
+      - TOKEN=${TOKEN}
+    volumes:
+      - .:/usr/src/app
+      
