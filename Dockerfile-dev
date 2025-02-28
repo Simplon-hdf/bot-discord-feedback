@@ -13,15 +13,11 @@ RUN npm install
 # Copier le code source
 COPY . .
 
-FROM node:22.13.1-alpine3.21
+# Compiler le code source
+RUN npm run build
 
 # Définir le répertoire de travail
 WORKDIR /usr/src/app
-
-# Copier uniquement les fichiers nécessaires depuis l'étape de build
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/package*.json ./
-COPY --from=builder /usr/src/app/index.js ./
 
 #On expose le port
 EXPOSE 3000
