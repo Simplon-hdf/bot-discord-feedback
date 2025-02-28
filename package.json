@@ -2,19 +2,24 @@
   "name": "discord-p4-feedback",
   "version": "0.1.0",
   "description": "Le bot discord feedback de Simplon-HDF.",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon index.ts",
+    "prod": "node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsup index.ts --minify"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^14.17.3"
+    "discord.js": "^14.18.0",
+    "dotenv": "^16.4.7"
   },
   "devDependencies": {
-    "@eslint/js": "^9.20.0",
-    "eslint": "^9.20.0",
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.4.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
   }
 }
