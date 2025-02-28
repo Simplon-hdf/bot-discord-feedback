@@ -1,0 +1,30 @@
+# Étape 1 : Build de l'application
+FROM node:22.13.1-alpine3.21 AS builder
+
+# Définir le répertoire de travail
+WORKDIR /usr/src/app
+
+# Copier uniquement les fichiers nécessaires pour installer les dépendances
+COPY package*.json ./
+
+# Installer les dépendances
+RUN npm install
+
+# Copier le code source
+COPY . .
+
+# Compiler le code source
+RUN npm run build
+
+FROM node:22.13.1-alpine3.21
+
+# Définir le répertoire de travail
+WORKDIR /usr/src/app
+
+# Copier uniquement les fichiers nécessaires depuis l'étape de build
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
+#On expose le port
+EXPOSE 3000
+
+CMD ["npm", "run", "prod"]
