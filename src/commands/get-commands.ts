@@ -1,5 +1,5 @@
 import { Collection, Interaction, SlashCommandBuilder } from "discord.js";
-import { data as feedbackInitData, execute as feedbackInitExecute } from "./commands/feedback-init";
+import { data as feedbackInitData, execute as feedbackInitExecute } from "./feedback-init";
 
 interface Command {
     data: SlashCommandBuilder;
