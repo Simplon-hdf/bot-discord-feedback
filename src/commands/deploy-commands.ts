@@ -1,6 +1,6 @@
 import { REST, Routes } from "discord.js";
 import { config } from "dotenv";
-import { data as feedbackInitCommand } from "./commands/feedback-init";
+import { data as feedbackInitCommand } from "./feedback-init";
 
 config();
 
