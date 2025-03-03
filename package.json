@@ -4,10 +4,10 @@
   "description": "Le bot discord feedback de Simplon-HDF.",
   "main": "index.ts",
   "scripts": {
-    "dev": "nodemon index.ts",
+    "dev": "nodemon src/index.ts",
     "prod": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsup index.ts --minify"
+    "build": "tsup src/index.ts --minify"
   },
   "author": "",
   "license": "ISC",
