@@ -65,7 +65,7 @@ export async function addQuestion(interaction: ModalSubmitInteraction) {
         
         // Ajouter la nouvelle question à la description
         let updatedDescription;
-        if (currentDescription === "Les questions" || currentDescription === "Aucune question") {
+        if (currentDescription === "Les questions" || currentDescription === "Aucune question" || currentDescription === "Aucune question n'a encore été ajoutée à ce sondage.") {
             updatedDescription = `**Question 1:** ${questionContent}`;
         } else {
             // Compter le nombre de questions existantes
@@ -149,50 +149,44 @@ export async function addQuestion(interaction: ModalSubmitInteraction) {
                         content: `Question ajoutée avec succès !`,
                         flags: MessageFlags.Ephemeral
                     });
-                } catch (sendError: any) {
+                } catch (sendError) {
                     console.error("Erreur lors de la création d'un nouveau message:", sendError);
-                    await interaction.reply({ 
-                        content: "Erreur lors de la mise à jour du message. Veuillez réessayer.", 
-                        flags: MessageFlags.Ephemeral 
+                    await interaction.reply({
+                        content: "Une erreur est survenue lors de l'ajout de la question. Veuillez réessayer.",
+                        flags: MessageFlags.Ephemeral
                     });
                 }
             } else {
-                await interaction.reply({ 
-                    content: "Erreur lors de la mise à jour du message. Le message a peut-être été supprimé ou modifié par un autre utilisateur.", 
-                    flags: MessageFlags.Ephemeral 
+                await interaction.reply({
+                    content: "Une erreur est survenue lors de l'ajout de la question. Veuillez réessayer.",
+                    flags: MessageFlags.Ephemeral
                 });
             }
-            
-            // Réinitialiser la variable globale
-            global.lastMessageId = undefined;
-            return;
         }
         
         // Réinitialiser la variable globale
         global.lastMessageId = undefined;
-    } catch (error: any) {
-        console.error("Erreur générale:", error);
+    } catch (error) {
+        console.error("Erreur lors de l'ajout de question:", error);
         
-        // Répondre à l'interaction avec un message d'erreur
-        try {
+        // Vérifier si l'interaction a déjà été répondue
+        if (!interaction.replied && !interaction.deferred) {
             await interaction.reply({ 
                 content: "Une erreur est survenue lors de l'ajout de la question. Veuillez réessayer.", 
                 flags: MessageFlags.Ephemeral 
             });
-        } catch (replyError) {
-            // Si l'interaction a déjà reçu une réponse, utiliser followUp
+        } else {
             try {
                 await interaction.followUp({ 
                     content: "Une erreur est survenue lors de l'ajout de la question. Veuillez réessayer.", 
                     flags: MessageFlags.Ephemeral 
                 });
             } catch (followUpError) {
-                // Si même followUp échoue, nous ne pouvons plus rien faire
-                console.error("Impossible de répondre à l'interaction:", followUpError);
+                console.error("Erreur lors de l'envoi du followUp:", followUpError);
             }
         }
         
-        // Réinitialiser la variable globale en cas d'erreur
+        // Réinitialiser la variable globale
         global.lastMessageId = undefined;
     }
 } 
