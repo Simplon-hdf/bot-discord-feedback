@@ -12,15 +12,9 @@ export async function questionSelect(interaction: StringSelectMenuInteraction) {
         return;
     }
     
-    // Récupérer l'embed du message original (pas celui du menu de sélection)
-    const originalMessage = await interaction.channel?.messages.fetch(message.reference?.messageId || "");
-    if (!originalMessage) {
-        await interaction.reply({ content: "Erreur: Message original introuvable", ephemeral: true });
-        return;
-    }
-    
-    const embed = originalMessage.embeds[0];
-    const description = embed.description || "";
+    // Récupérer l'embed existant
+    const embed = EmbedBuilder.from(message.embeds[0]);
+    const description = embed.data.description || "";
     
     // Extraire les questions du message
     const sections = description.split("\n\n");
@@ -79,7 +73,7 @@ export async function questionSelect(interaction: StringSelectMenuInteraction) {
         .setStyle(ButtonStyle.Success);
     
     const cancelButton = new ButtonBuilder()
-        .setCustomId(`cancelEdit_${questionIndex}`)
+        .setCustomId("cancelEditQuestion")
         .setLabel("Annuler")
         .setStyle(ButtonStyle.Secondary);
     
@@ -93,16 +87,10 @@ export async function questionSelect(interaction: StringSelectMenuInteraction) {
     const actionRow3 = new ActionRowBuilder<ButtonBuilder>()
         .addComponents(saveButton, cancelButton);
     
-    // Créer un embed pour afficher la question sélectionnée
-    const questionEmbed = new EmbedBuilder()
-        .setTitle("Modification de question")
-        .setDescription(`**Question sélectionnée:** ${questionText}`)
-        .setColor(0x0099FF);
-    
-    // Répondre avec les options de modification
+    // Mettre à jour le message avec les options de modification
     await interaction.update({
-        content: "Choisissez une action pour cette question :",
-        embeds: [questionEmbed],
+        content: `Modification de la question ${questionIndex + 1} : ${questionText}`,
+        embeds: [embed],
         components: [actionRow1, actionRow2, actionRow3]
     });
 } 
