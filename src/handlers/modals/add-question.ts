@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ModalSubmitInteraction } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ModalSubmitInteraction, MessageFlags } from "discord.js";
 
 // Déclarer le type pour la variable globale
 declare global {
@@ -14,7 +14,10 @@ export async function addQuestion(interaction: ModalSubmitInteraction) {
         const messageId = global.lastMessageId;
         
         if (!messageId) {
-            await interaction.reply({ content: "Erreur: ID du message introuvable", ephemeral: true });
+            await interaction.reply({ 
+                content: "Erreur: ID du message introuvable. Veuillez réessayer en cliquant à nouveau sur le bouton d'ajout de question.", 
+                flags: MessageFlags.Ephemeral 
+            });
             return;
         }
         
@@ -22,7 +25,10 @@ export async function addQuestion(interaction: ModalSubmitInteraction) {
         const channel = interaction.channel;
         
         if (!channel) {
-            await interaction.reply({ content: "Erreur: Canal introuvable", ephemeral: true });
+            await interaction.reply({ 
+                content: "Erreur: Canal introuvable", 
+                flags: MessageFlags.Ephemeral 
+            });
             return;
         }
         
@@ -30,17 +36,26 @@ export async function addQuestion(interaction: ModalSubmitInteraction) {
         let message;
         try {
             message = await channel.messages.fetch(messageId);
+            console.log(`Message trouvé avec l'ID: ${messageId}`);
         } catch (fetchError: any) {
+            console.error(`Erreur lors de la récupération du message avec l'ID ${messageId}:`, fetchError);
             await interaction.reply({ 
-                content: "Erreur lors de la récupération du message. Veuillez réessayer.", 
-                ephemeral: true 
+                content: "Erreur: Le message original n'a pas pu être trouvé. Il a peut-être été supprimé ou déplacé.", 
+                flags: MessageFlags.Ephemeral 
             });
+            // Réinitialiser la variable globale
+            global.lastMessageId = undefined;
             return;
         }
         
         // Vérifier si le message a des embeds
         if (!message || !message.embeds || message.embeds.length === 0) {
-            await interaction.reply({ content: "Erreur: Le message n'a pas d'embeds", ephemeral: true });
+            await interaction.reply({ 
+                content: "Erreur: Le message n'a pas d'embeds", 
+                flags: MessageFlags.Ephemeral 
+            });
+            // Réinitialiser la variable globale
+            global.lastMessageId = undefined;
             return;
         }
         
@@ -49,8 +64,24 @@ export async function addQuestion(interaction: ModalSubmitInteraction) {
         const currentDescription = embed.data.description || "Aucune question";
         
         // Ajouter la nouvelle question à la description
-        const updatedDescription = `${currentDescription}\n\n**Question:** ${questionContent}`;
+        let updatedDescription;
+        if (currentDescription === "Les questions" || currentDescription === "Aucune question") {
+            updatedDescription = `**Question 1:** ${questionContent}`;
+        } else {
+            // Compter le nombre de questions existantes
+            const questionMatches = currentDescription.match(/\*\*Question \d+:\*\*/g);
+            const questionCount = questionMatches ? questionMatches.length : 0;
+            updatedDescription = `${currentDescription}\n\n**Question ${questionCount + 1}:** ${questionContent}`;
+        }
+        
         embed.setDescription(updatedDescription);
+        
+        // S'assurer que le footer est présent
+        if (!embed.data.footer) {
+            embed.setFooter({
+                text: "Utilisez les boutons ci-dessous pour gérer les questions du sondage"
+            });
+        }
         
         // Recréer les boutons originaux
         const addButton = new ButtonBuilder()
@@ -71,46 +102,95 @@ export async function addQuestion(interaction: ModalSubmitInteraction) {
         const row = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(addButton, editButton, removeButton);
         
-        // Répondre à l'interaction et mettre à jour le message original
         try {
-            // Répondre à l'interaction de manière éphémère
-            await interaction.reply({
-                content: `Question ajoutée : ${questionContent}`,
-                ephemeral: true
+            // Mettre à jour le message existant avec un message de confirmation temporaire
+            await message.edit({
+                content: `✅ Question ajoutée avec succès !`,
+                embeds: [embed],
+                components: [row]
             });
             
-            // Supprimer le message original et en créer un nouveau au même endroit
-            await message.delete();
+            // Répondre à l'interaction de manière éphémère pour la fermer
+            await interaction.deferUpdate();
             
-            // Envoyer un nouveau message dans le même canal
-            if ('send' in channel) {
-                await channel.send({
-                    embeds: [embed],
-                    components: [row]
-                });
+            console.log(`Message mis à jour avec succès, ID: ${message.id}`);
+            
+            // Supprimer le message de confirmation après 3 secondes
+            setTimeout(async () => {
+                try {
+                    await message.edit({
+                        content: null,
+                        embeds: [embed],
+                        components: [row]
+                    });
+                } catch (error) {
+                    console.error("Erreur lors de la suppression du message de confirmation:", error);
+                }
+            }, 3000);
+        } catch (editError: any) {
+            console.error("Erreur lors de la mise à jour du message:", editError);
+            
+            // Si nous ne pouvons pas modifier le message, créons-en un nouveau
+            if ('send' in channel && message.author.id === interaction.client.user?.id) {
+                try {
+                    // Supprimer l'ancien message
+                    await message.delete();
+                    
+                    // Créer un nouveau message
+                    const newMessage = await channel.send({
+                        embeds: [embed],
+                        components: [row]
+                    });
+                    
+                    console.log(`Nouveau message créé avec l'ID: ${newMessage.id}`);
+                    
+                    // Répondre à l'interaction de manière éphémère
+                    await interaction.reply({
+                        content: `Question ajoutée avec succès !`,
+                        flags: MessageFlags.Ephemeral
+                    });
+                } catch (sendError: any) {
+                    console.error("Erreur lors de la création d'un nouveau message:", sendError);
+                    await interaction.reply({ 
+                        content: "Erreur lors de la mise à jour du message. Veuillez réessayer.", 
+                        flags: MessageFlags.Ephemeral 
+                    });
+                }
             } else {
-                // Fallback si le canal ne supporte pas la méthode send
-                await interaction.followUp({
-                    embeds: [embed],
-                    components: [row],
-                    ephemeral: false
+                await interaction.reply({ 
+                    content: "Erreur lors de la mise à jour du message. Le message a peut-être été supprimé ou modifié par un autre utilisateur.", 
+                    flags: MessageFlags.Ephemeral 
                 });
             }
-        } catch (error: any) {
-            await interaction.reply({ 
-                content: "Erreur lors de la mise à jour du message. Veuillez réessayer.", 
-                ephemeral: true 
-            });
+            
+            // Réinitialiser la variable globale
+            global.lastMessageId = undefined;
             return;
         }
         
         // Réinitialiser la variable globale
         global.lastMessageId = undefined;
     } catch (error: any) {
-        await interaction.reply({ 
-            content: "Une erreur est survenue. Veuillez réessayer.", 
-            ephemeral: true 
-        });
+        console.error("Erreur générale:", error);
+        
+        // Répondre à l'interaction avec un message d'erreur
+        try {
+            await interaction.reply({ 
+                content: "Une erreur est survenue lors de l'ajout de la question. Veuillez réessayer.", 
+                flags: MessageFlags.Ephemeral 
+            });
+        } catch (replyError) {
+            // Si l'interaction a déjà reçu une réponse, utiliser followUp
+            try {
+                await interaction.followUp({ 
+                    content: "Une erreur est survenue lors de l'ajout de la question. Veuillez réessayer.", 
+                    flags: MessageFlags.Ephemeral 
+                });
+            } catch (followUpError) {
+                // Si même followUp échoue, nous ne pouvons plus rien faire
+                console.error("Impossible de répondre à l'interaction:", followUpError);
+            }
+        }
         
         // Réinitialiser la variable globale en cas d'erreur
         global.lastMessageId = undefined;
