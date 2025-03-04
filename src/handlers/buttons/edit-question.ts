@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 
 export async function editQuestion(interaction: ButtonInteraction) {
     // Récupérer le message original
@@ -9,18 +9,13 @@ export async function editQuestion(interaction: ButtonInteraction) {
     }
     
     // Récupérer l'embed existant
-    const embed = message.embeds[0];
-    const description = embed.description || "";
+    const embed = EmbedBuilder.from(message.embeds[0]);
+    const description = embed.data.description || "";
     
     // Extraire les questions du message
     // Diviser par "\n\n" et filtrer pour trouver les lignes qui contiennent "**Question:**"
     const sections = description.split("\n\n");
     const questions = sections.filter(q => q.includes("**Question:**"));
-    
-    // Afficher des informations de débogage
-    console.log("Description du message:", description);
-    console.log("Sections trouvées:", sections);
-    console.log("Questions trouvées:", questions);
     
     // Si aucune question n'est trouvée
     if (questions.length === 0) {
@@ -53,14 +48,23 @@ export async function editQuestion(interaction: ButtonInteraction) {
         );
     });
     
-    // Créer une ligne pour le menu déroulant
-    const row = new ActionRowBuilder<StringSelectMenuBuilder>()
+    // Créer le bouton d'annulation
+    const cancelButton = new ButtonBuilder()
+        .setCustomId("cancelEditQuestion")
+        .setLabel("Annuler")
+        .setStyle(ButtonStyle.Secondary);
+    
+    // Créer les lignes pour les composants
+    const selectRow = new ActionRowBuilder<StringSelectMenuBuilder>()
         .addComponents(selectMenu);
     
-    // Répondre avec le menu de sélection
-    await interaction.reply({
+    const buttonRow = new ActionRowBuilder<ButtonBuilder>()
+        .addComponents(cancelButton);
+    
+    // Mettre à jour le message avec le menu de sélection
+    await interaction.update({
         content: "Sélectionnez la question que vous souhaitez modifier :",
-        components: [row],
-        ephemeral: true
+        embeds: [embed],
+        components: [selectRow, buttonRow]
     });
 } 
