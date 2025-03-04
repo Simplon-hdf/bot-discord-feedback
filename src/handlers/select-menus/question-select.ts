@@ -24,7 +24,7 @@ export async function questionSelect(interaction: StringSelectMenuInteraction) {
     
     // Extraire les questions du message
     const sections = description.split("\n\n");
-    const questions = sections.filter(q => q.startsWith("**Question:**"));
+    const questions = sections.filter(q => q.includes("**Question:**"));
     
     // Vérifier que l'index est valide
     if (questionIndex < 0 || questionIndex >= questions.length) {
