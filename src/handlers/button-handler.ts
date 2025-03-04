@@ -2,6 +2,7 @@ import { ButtonInteraction } from "discord.js";
 import { createPoll } from "./buttons/create-poll";
 import { addQuestion } from "./buttons/add-question";
 import { editQuestion } from "./buttons/edit-question";
+import { cancelEditQuestion } from "./buttons/cancel-edit-question";
 
 export async function handleButton(interaction: ButtonInteraction) {
 	if (interaction.customId === "feedbackCreateButton") {
@@ -10,6 +11,17 @@ export async function handleButton(interaction: ButtonInteraction) {
 		await addQuestion(interaction);
 	} else if (interaction.customId === "feedbackQuestionEditButton") {
 		await editQuestion(interaction);
+	} else if (interaction.customId === "cancelEditQuestion") {
+		await cancelEditQuestion(interaction);
+	} else if (interaction.customId === "feedbackQuestionRemoveButton") {
+		// Gérer la suppression de questions (sera implémenté plus tard)
+		await interaction.reply({ content: "Fonctionnalité de suppression de questions en cours d'implémentation", ephemeral: true });
+	} else if (interaction.customId === "confirmDeleteQuestions") {
+		// Gérer la confirmation de suppression (sera implémenté plus tard)
+		await interaction.reply({ content: "Fonctionnalité de confirmation de suppression en cours d'implémentation", ephemeral: true });
+	} else if (interaction.customId === "cancelDeleteQuestions") {
+		// Gérer l'annulation de suppression (sera implémenté plus tard)
+		await interaction.reply({ content: "Fonctionnalité d'annulation de suppression en cours d'implémentation", ephemeral: true });
 	} else if (interaction.customId.startsWith("editQuestionText_")) {
 		// Gérer la modification du texte de la question (sera implémenté plus tard)
 		await interaction.reply({ content: "Fonctionnalité de modification du texte en cours d'implémentation", ephemeral: true });
