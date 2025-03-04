@@ -13,11 +13,21 @@ export async function editQuestion(interaction: ButtonInteraction) {
     const description = embed.description || "";
     
     // Extraire les questions du message
-    const questions = description.split("\n\n").filter(q => q.startsWith("**Question:**"));
+    // Diviser par "\n\n" et filtrer pour trouver les lignes qui contiennent "**Question:**"
+    const sections = description.split("\n\n");
+    const questions = sections.filter(q => q.includes("**Question:**"));
+    
+    // Afficher des informations de débogage
+    console.log("Description du message:", description);
+    console.log("Sections trouvées:", sections);
+    console.log("Questions trouvées:", questions);
     
     // Si aucune question n'est trouvée
     if (questions.length === 0) {
-        await interaction.reply({ content: "Aucune question à modifier", ephemeral: true });
+        await interaction.reply({ 
+            content: "Aucune question à modifier. Veuillez d'abord ajouter une question au sondage.", 
+            ephemeral: true 
+        });
         return;
     }
     
