@@ -1,4 +1,5 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, CommandInteraction, EmbedBuilder, MessageFlags, PartialTextBasedChannelFields, SlashCommandBuilder, TextChannel, VoiceChannel } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction, EmbedBuilder, MessageFlags, SlashCommandBuilder } from "discord.js";
+import { initRow } from "../utils/components";
 
 export const data = new SlashCommandBuilder()
 	.setName("feedback-init")
@@ -22,27 +23,11 @@ export async function execute(interaction: CommandInteraction) {
 			+ "  Démarre la modification d'un modèle de questionnaire"
 		);
 
-	// Création des bouton
-	const button1 = new ButtonBuilder()
-		.setCustomId("feedbackCreateButton")
-		.setLabel("Créer un questionnaire")
-		.setStyle(ButtonStyle.Primary);
 	
-	const button2 = new ButtonBuilder()
-		.setCustomId("feedbackTemplateCreateButton")
-		.setLabel("Créer un modèle de questionnaire")
-		.setStyle(ButtonStyle.Primary);
-
-	const button3 = new ButtonBuilder()
-		.setCustomId("feedbackTemplateEditButton")
-		.setLabel("Modifier un modèle de questionnaire")
-		.setStyle(ButtonStyle.Primary);
-
-	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button1, button2, button3);
 
 	// Envoi du message avec le bouton (sans la mention de la commande, en utilisant channel.send directement)
 	const channel = interaction.channel;
 	if (channel?.isSendable()) {
-		await channel.send({ embeds: [embed], components: [row] });
+		await channel.send({ embeds: [embed], components: [initRow()] });
 	}
 }
