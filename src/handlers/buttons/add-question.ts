@@ -1,10 +1,5 @@
 import { ActionRowBuilder, ButtonInteraction, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } from "discord.js";
 
-// Déclarer le type pour la variable globale
-declare global {
-    var lastMessageId: string | undefined;
-}
-
 export async function addQuestion(interaction: ButtonInteraction) {
     try {
         // Récupérer le message original
@@ -18,15 +13,11 @@ export async function addQuestion(interaction: ButtonInteraction) {
             return;
         }
         
-        // Stocker l'ID du message dans une variable globale temporaire
-        global.lastMessageId = message.id;
-        console.log(`ID du message stocké: ${message.id}`);
-        
         // Créer un champ de texte pour la question
         const questionInput = new TextInputBuilder()
             .setCustomId("questionContent")
             .setLabel("Question")
-            .setStyle(TextInputStyle.Paragraph)
+            .setStyle(TextInputStyle.Short)
             .setPlaceholder("Entrez votre question ici")
             .setRequired(true)
             .setMaxLength(100);

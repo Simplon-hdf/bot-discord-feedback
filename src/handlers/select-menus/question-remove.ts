@@ -3,7 +3,6 @@ import { StringSelectMenuInteraction, MessageFlags } from "discord.js";
 // Variable globale pour stocker les questions sélectionnées pour la suppression
 declare global {
     var selectedQuestionsToRemove: string[] | undefined;
-    var lastMessageId: string | undefined;
 }
 
 export async function questionRemove(interaction: StringSelectMenuInteraction) {

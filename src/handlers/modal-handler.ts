@@ -10,7 +10,6 @@ export async function handleModal(interaction: ModalSubmitInteraction) {
         await createPoll(interaction);
     } else if (interaction.customId === "addQuestionModal") {
         console.log("Traitement du modal d'ajout de question");
-        console.log(`ID du message stocké: ${global.lastMessageId}`);
         await addQuestion(interaction);
     } else {
         console.log(`Modal non reconnu: ${interaction.customId}`);

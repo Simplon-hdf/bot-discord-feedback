@@ -1,9 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, MessageFlags } from "discord.js";
-
-// Déclarer le type pour les variables globales
-declare global {
-    var lastMessageId: string | undefined;
-}
+import { logMessageTimer } from "../../utils/timer";
 
 export async function removeQuestion(interaction: ButtonInteraction) {
     try {
@@ -33,6 +29,9 @@ export async function removeQuestion(interaction: ButtonInteraction) {
                 content: "Aucune question à supprimer. Ajoutez d'abord des questions au sondage.", 
                 flags: MessageFlags.Ephemeral 
             });
+            setTimeout(async () => {
+                await interaction.deleteReply();
+            }, logMessageTimer);
             return;
         }
         
@@ -74,10 +73,6 @@ export async function removeQuestion(interaction: ButtonInteraction) {
         
         const actionRow2 = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(confirmButton, cancelButton);
-        
-        // Stocker l'ID du message original dans une variable globale
-        global.lastMessageId = message.id;
-        console.log(`ID du message stocké pour suppression: ${message.id}`);
         
         // Mettre à jour le message avec les options de suppression
         await interaction.update({
