@@ -1,9 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, MessageFlags } from "discord.js";
-
-// Déclarer le type pour la variable globale
-declare global {
-    var lastMessageId: string | undefined;
-}
+import { logMessageTimer } from "../../utils/timer";
 
 export async function editQuestion(interaction: ButtonInteraction) {
     try {
@@ -16,10 +12,6 @@ export async function editQuestion(interaction: ButtonInteraction) {
             });
             return;
         }
-        
-        // Stocker l'ID du message dans une variable globale temporaire
-        global.lastMessageId = message.id;
-        console.log(`ID du message stocké pour édition: ${message.id}`);
         
         // Récupérer l'embed existant
         const embed = EmbedBuilder.from(message.embeds[0]);
@@ -38,6 +30,10 @@ export async function editQuestion(interaction: ButtonInteraction) {
                 content: "Aucune question à modifier. Veuillez d'abord ajouter une question au sondage.", 
                 flags: MessageFlags.Ephemeral 
             });
+
+            setTimeout(async () => {
+                await interaction.deleteReply();
+            }, logMessageTimer);
             return;
         }
         
