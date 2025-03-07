@@ -6,6 +6,7 @@ import { cancelEditQuestion } from "./buttons/cancel-edit-question";
 import { removeQuestion } from "./buttons/remove-question";
 import { confirmRemoveQuestions } from "./buttons/confirm-remove-questions";
 import { cancelRemoveQuestions } from "./buttons/cancel-remove-questions";
+import { editPollTitle } from "./buttons/edit-poll-title";
 
 export async function handleButton(interaction: ButtonInteraction) {
 	if (interaction.customId === "feedbackCreateButton") {
@@ -58,5 +59,7 @@ export async function handleButton(interaction: ButtonInteraction) {
 			content: "Modification annulée", 
 			flags: MessageFlags.Ephemeral 
 		});
+	} else if(interaction.customId === "feedbackEditTitleButton"){
+		await editPollTitle(interaction);
 	}
 }
