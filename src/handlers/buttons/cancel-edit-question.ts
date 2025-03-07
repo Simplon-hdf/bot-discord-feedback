@@ -1,6 +1,6 @@
 import { ButtonInteraction, MessageFlags } from "discord.js";
 import { logMessageTimer } from "../../utils/timer";
-import { pollEmbed, pollRow1 } from "../../utils/components";
+import { pollEmbed, pollRows } from "../../utils/components";
 import { getPollObject } from "../../utils/poll-store";
 
 export async function cancelEditQuestion(interaction: ButtonInteraction) {
@@ -21,7 +21,7 @@ export async function cancelEditQuestion(interaction: ButtonInteraction) {
 		await interaction.update({
 			content: null,
 			embeds: [pollEmbed(poll)],
-			components: [pollRow1()]
+			components: pollRows()
 		});
 
 	} catch (error) {
