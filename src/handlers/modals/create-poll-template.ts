@@ -9,9 +9,6 @@ export async function createPollTemplate(interaction: ModalSubmitInteraction) {
         interaction.fields.getTextInputValue('pollTemplateTitle')
     );
 
-    // Ajouter une propriété pour indiquer qu'il s'agit d'un modèle
-    (poll as any).isTemplate = true;
-
     // Envoyer le modèle de questionnaire comme un message éphémère dans le canal
     await interaction.reply({
         embeds: [pollEmbed(poll)],
