@@ -3,10 +3,10 @@ import { getPollObject } from "../../utils/poll-store";
 import { questionEmbed, pollEmbed, pollRows } from "../../utils/components";
 import { logMessageTimer } from "../../utils/timer";
 
-export async function addProposal(interaction: ModalSubmitInteraction) {
+export async function addAnswer(interaction: ModalSubmitInteraction) {
     try {
         // Récupérer l'index de la question à partir de l'ID du modal
-        const questionIndex = parseInt(interaction.customId.replace("addProposalModal_", ""));
+        const questionIndex = parseInt(interaction.customId.replace("addAnswerModal_", ""));
         
         const poll = getPollObject(interaction.user.id);
         if (!poll) {
@@ -35,12 +35,12 @@ export async function addProposal(interaction: ModalSubmitInteraction) {
         // Récupérer la question
         const question = poll.questions[questionIndex];
         
-        // Récupérer le texte de la proposition
-        const proposalText = interaction.fields.getTextInputValue("proposalText");
+        // Récupérer le texte de la réponse
+        const answerText = interaction.fields.getTextInputValue("answerText");
         
-        // Ajouter la proposition à la question
+        // Ajouter la réponse à la question
         question.answers.push({
-            content: proposalText
+            content: answerText
         });
         
         // Créer les boutons pour les actions sur la question
@@ -49,19 +49,19 @@ export async function addProposal(interaction: ModalSubmitInteraction) {
             .setLabel("Modifier le titre de la question")
             .setStyle(ButtonStyle.Primary);
 
-        const addProposalButton = new ButtonBuilder()
-            .setCustomId(`addProposal_${questionIndex}`)
-            .setLabel("Ajouter une proposition")
+        const addAnswerButton = new ButtonBuilder()
+            .setCustomId(`addAnswer_${questionIndex}`)
+            .setLabel("Ajouter une réponse")
             .setStyle(ButtonStyle.Primary);
 
-        const editProposalButton = new ButtonBuilder()
-            .setCustomId(`editProposal_${questionIndex}`)
-            .setLabel("Modifier une proposition")
+        const editAnswerButton = new ButtonBuilder()
+            .setCustomId(`editAnswer_${questionIndex}`)
+            .setLabel("Modifier une réponse")
             .setStyle(ButtonStyle.Primary);
 
-        const deleteProposalButton = new ButtonBuilder()
-            .setCustomId(`deleteProposal_${questionIndex}`)
-            .setLabel("Supprimer une proposition")
+        const deleteAnswerButton = new ButtonBuilder()
+            .setCustomId(`deleteAnswer_${questionIndex}`)
+            .setLabel("Supprimer une réponse")
             .setStyle(ButtonStyle.Danger);
 
         // Créer le bouton de retour
@@ -87,7 +87,7 @@ export async function addProposal(interaction: ModalSubmitInteraction) {
 
         // Créer les lignes pour les composants
         const actionRow1 = new ActionRowBuilder<ButtonBuilder>()
-            .addComponents(editQuestionButton, addProposalButton, editProposalButton, deleteProposalButton);
+            .addComponents(editQuestionButton, addAnswerButton, editAnswerButton, deleteAnswerButton);
 
         const actionRow2 = new ActionRowBuilder<StringSelectMenuBuilder>()
             .addComponents(multipleChoiceMenu);
@@ -98,14 +98,14 @@ export async function addProposal(interaction: ModalSubmitInteraction) {
         // Mettre à jour le message existant
         await interaction.deferUpdate();
         await interaction.editReply({
-            content: `Question ${questionIndex + 1} avec proposition ajoutée`,
+            content: `Question ${questionIndex + 1} avec réponse ajoutée`,
             embeds: [questionEmbed(question)],
             components: [actionRow1, actionRow2, actionRow3]
         });
         
         // Envoyer un message de confirmation qui sera supprimé après un certain temps
         const followUp = await interaction.followUp({
-            content: `La proposition "${proposalText}" a été ajoutée avec succès !`,
+            content: `La réponse "${answerText}" a été ajoutée avec succès !`,
             flags: MessageFlags.Ephemeral
         });
         
@@ -113,18 +113,18 @@ export async function addProposal(interaction: ModalSubmitInteraction) {
             await interaction.deleteReply(followUp);
         }, logMessageTimer);
     } catch (error) {
-        console.error("Erreur lors de l'ajout d'une proposition:", error);
+        console.error("Erreur lors de l'ajout d'une réponse:", error);
         
         // Vérifier si l'interaction a déjà été répondue
         if (!interaction.replied && !interaction.deferred) {
             await interaction.reply({
-                content: "Une erreur est survenue lors de l'ajout d'une proposition. Veuillez réessayer.",
+                content: "Une erreur est survenue lors de l'ajout d'une réponse. Veuillez réessayer.",
                 flags: MessageFlags.Ephemeral
             });
         } else {
             try {
                 await interaction.followUp({
-                    content: "Une erreur est survenue lors de l'ajout d'une proposition. Veuillez réessayer.",
+                    content: "Une erreur est survenue lors de l'ajout d'une réponse. Veuillez réessayer.",
                     flags: MessageFlags.Ephemeral
                 });
             } catch (followUpError) {

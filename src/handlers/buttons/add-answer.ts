@@ -1,10 +1,10 @@
 import { ActionRowBuilder, ButtonInteraction, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } from "discord.js";
 import { getPollObject } from "../../utils/poll-store";
 
-export async function addProposal(interaction: ButtonInteraction) {
+export async function addAnswer(interaction: ButtonInteraction) {
     try {
         // Récupérer l'index de la question à partir de l'ID du bouton
-        const questionIndex = parseInt(interaction.customId.replace("addProposal_", ""));
+        const questionIndex = parseInt(interaction.customId.replace("addAnswer_", ""));
         
         const poll = getPollObject(interaction.user.id);
         if (!poll) {
@@ -24,30 +24,30 @@ export async function addProposal(interaction: ButtonInteraction) {
             return;
         }
         
-        // Créer un input pour le texte de la proposition
-        const proposalInput = new TextInputBuilder()
-            .setCustomId(`proposalText`)
-            .setLabel("Texte de la proposition")
+        // Créer un input pour le texte de la réponse
+        const answerInput = new TextInputBuilder()
+            .setCustomId(`answerText`)
+            .setLabel("Texte de la réponse")
             .setStyle(TextInputStyle.Short)
             .setRequired(true)
             .setMaxLength(100);
             
         // Créer la ligne pour l'input
         const actionRow = new ActionRowBuilder<TextInputBuilder>()
-            .addComponents(proposalInput);
+            .addComponents(answerInput);
             
         // Créer le modal
         const modal = new ModalBuilder()
-            .setCustomId(`addProposalModal_${questionIndex}`)
-            .setTitle("Ajouter une proposition")
+            .setCustomId(`addAnswerModal_${questionIndex}`)
+            .setTitle("Ajouter une réponse")
             .addComponents(actionRow);
             
         // Afficher le modal
         await interaction.showModal(modal);
     } catch (error) {
-        console.error("Erreur lors de l'ajout d'une proposition:", error);
+        console.error("Erreur lors de l'ajout d'une réponse:", error);
         await interaction.reply({
-            content: "Une erreur est survenue lors de l'ajout d'une proposition. Veuillez réessayer.",
+            content: "Une erreur est survenue lors de l'ajout d'une réponse. Veuillez réessayer.",
             flags: MessageFlags.Ephemeral
         });
     }

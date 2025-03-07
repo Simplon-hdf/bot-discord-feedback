@@ -45,19 +45,19 @@ export async function editQuestionText(interaction: ModalSubmitInteraction) {
             .setLabel("Modifier le titre de la question")
             .setStyle(ButtonStyle.Primary);
 
-        const addProposalButton = new ButtonBuilder()
-            .setCustomId(`addProposal_${questionIndex}`)
-            .setLabel("Ajouter une proposition")
+        const addAnswerButton = new ButtonBuilder()
+            .setCustomId(`addAnswer_${questionIndex}`)
+            .setLabel("Ajouter une réponse")
             .setStyle(ButtonStyle.Primary);
 
-        const editProposalButton = new ButtonBuilder()
-            .setCustomId(`editProposal_${questionIndex}`)
-            .setLabel("Modifier une proposition")
+        const editAnswerButton = new ButtonBuilder()
+            .setCustomId(`editAnswer_${questionIndex}`)
+            .setLabel("Modifier une réponse")
             .setStyle(ButtonStyle.Primary);
 
-        const deleteProposalButton = new ButtonBuilder()
-            .setCustomId(`deleteProposal_${questionIndex}`)
-            .setLabel("Supprimer une proposition")
+        const deleteAnswerButton = new ButtonBuilder()
+            .setCustomId(`deleteAnswer_${questionIndex}`)
+            .setLabel("Supprimer une réponse")
             .setStyle(ButtonStyle.Danger);
 
         // Créer le bouton de retour
@@ -83,7 +83,7 @@ export async function editQuestionText(interaction: ModalSubmitInteraction) {
 
         // Créer les lignes pour les composants
         const actionRow1 = new ActionRowBuilder<ButtonBuilder>()
-            .addComponents(editQuestionButton, addProposalButton, editProposalButton, deleteProposalButton);
+            .addComponents(editQuestionButton, addAnswerButton, editAnswerButton, deleteAnswerButton);
 
         const actionRow2 = new ActionRowBuilder<StringSelectMenuBuilder>()
             .addComponents(multipleChoiceMenu);

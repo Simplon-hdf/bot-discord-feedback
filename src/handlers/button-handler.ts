@@ -9,7 +9,7 @@ import { createPollTemplate } from "./buttons/create-poll-template";
 import { saveTemplate } from "./buttons/save-template";
 import { editPollDuration } from "./buttons/edit-poll-duration";
 import { editQuestionText } from "./buttons/edit-question-text";
-import { addProposal } from "./buttons/add-proposal";
+import { addAnswer } from "./buttons/add-answer";
 import { backToQuestionList } from "./buttons/back-to-question-list";
 import { backToMainMenu } from "./buttons/back-to-main-menu";
 
@@ -38,18 +38,18 @@ export async function handleButton(interaction: ButtonInteraction) {
 		await backToMainMenu(interaction);
 	} else if (interaction.customId.startsWith("editQuestionText_")) {
 		await editQuestionText(interaction);
-	} else if (interaction.customId.startsWith("addProposal_")) {
-		await addProposal(interaction);
-	} else if (interaction.customId.startsWith("editProposal_")) {
-		// Gérer la modification d'une proposition (sera implémenté plus tard)
+	} else if (interaction.customId.startsWith("addAnswer_")) {
+		await addAnswer(interaction);
+	} else if (interaction.customId.startsWith("editAnswer_")) {
+		// Gérer la modification d'une réponse (sera implémenté plus tard)
 		await interaction.reply({
-			content: "Fonctionnalité de modification de proposition en cours d'implémentation",
+			content: "Fonctionnalité de modification de réponse en cours d'implémentation",
 			flags: MessageFlags.Ephemeral
 		});
-	} else if (interaction.customId.startsWith("deleteProposal_")) {
-		// Gérer la suppression d'une proposition (sera implémenté plus tard)
+	} else if (interaction.customId.startsWith("deleteAnswer_")) {
+		// Gérer la suppression d'une réponse (sera implémenté plus tard)
 		await interaction.reply({
-			content: "Fonctionnalité de suppression de proposition en cours d'implémentation",
+			content: "Fonctionnalité de suppression de réponse en cours d'implémentation",
 			flags: MessageFlags.Ephemeral
 		});
 	}
