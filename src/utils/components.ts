@@ -65,7 +65,7 @@ export function initRow(): ActionRowBuilder<ButtonBuilder> {
 }
 
 export function pollRows(): ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>[] {
-	return [pollRow1(), pollRow2(), pollRow3()];
+	return [pollRow1(), pollRow2()];
 }
 
 export function pollRow1(): ActionRowBuilder<ButtonBuilder> {
@@ -123,13 +123,4 @@ export function pollRow2(): ActionRowBuilder<ButtonBuilder> {
 		.setStyle(ButtonStyle.Primary);
 
 	return new ActionRowBuilder<ButtonBuilder>().addComponents(editTitleButton, isAnonymousButton, durationButton);
-}
-
-export function pollRow3(): ActionRowBuilder<ButtonBuilder> {
-	const saveTemplateButton = new ButtonBuilder()
-		.setCustomId("saveTemplateButton")
-		.setLabel("Enregistrer le modèle")
-		.setStyle(ButtonStyle.Success);
-
-	return new ActionRowBuilder<ButtonBuilder>().addComponents(saveTemplateButton);
 }
