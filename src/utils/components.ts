@@ -1,10 +1,21 @@
-import { ButtonBuilder, ButtonStyle, ActionRowBuilder, EmbedBuilder } from "discord.js";
+import { ButtonBuilder, ButtonStyle, ActionRowBuilder, EmbedBuilder, StringSelectMenuBuilder } from "discord.js";
 import { Poll } from "../models/poll";
 import { Question } from "../models/question";
+
+function durationToString(duration: number): string {
+	if (duration < 1) return `${duration * 60} minutes`;
+	else if (duration > 24) return `${duration / 24} ${duration / 24} jours`;
+	else return `${duration} ${duration === 1 ? "heure" : "heures"}`;
+}
 
 export function pollEmbed(poll: Poll): EmbedBuilder {
 	const embed = new EmbedBuilder()
 		.setTitle(`Titre : ${poll.title}`)
+		.setDescription(
+			`**Auteur** : <@${poll.uuidAuthor}>` +
+			`\n**Anonyme** : ${poll.isAnonymous ? "Oui" : "Non"}` +
+			`\n**Durée** : ${durationToString(poll.duration)}`
+		)
 		.setFooter({
 			text: "Utilisez les boutons ci-dessous pour gérer les questions du sondage"
 		});
@@ -53,12 +64,11 @@ export function initRow(): ActionRowBuilder<ButtonBuilder> {
 	return new ActionRowBuilder<ButtonBuilder>().addComponents(createPollButton, createPollTemplateButton, editPollTemplateButton);;
 }
 
-export function pollRow1(): ActionRowBuilder<ButtonBuilder> {
-	const editTitleButton = new ButtonBuilder()
-		.setCustomId("feedbackEditTitleButton")
-		.setLabel("Modifier le titre du questionnaire")
-		.setStyle(ButtonStyle.Primary);
+export function pollRows(): ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>[] {
+	return [pollRow1(), pollRow2()];
+}
 
+export function pollRow1(): ActionRowBuilder<ButtonBuilder> {
 	const addQuestionButton = new ButtonBuilder()
 		.setCustomId("feedbackQuestionAddButton")
 		.setLabel("Ajouter une question")
@@ -74,5 +84,43 @@ export function pollRow1(): ActionRowBuilder<ButtonBuilder> {
 		.setLabel("Supprimer une ou plusieurs questions")
 		.setStyle(ButtonStyle.Primary);
 
-	return new ActionRowBuilder<ButtonBuilder>().addComponents(editTitleButton, addQuestionButton, editQuestionButton, removeQuestionButton);
+	return new ActionRowBuilder<ButtonBuilder>().addComponents(addQuestionButton, editQuestionButton, removeQuestionButton);
+}
+
+export function pollRow2(): ActionRowBuilder<ButtonBuilder> {
+	// const isAnonymousMenu = new StringSelectMenuBuilder()
+	// 	.setCustomId("feedbackAnonymousMenu")
+	// 	.setPlaceholder("Anonyme ?")
+	// 	.addOptions([
+	// 		{ label: "Oui", value: "true" },
+	// 		{ label: "Non", value: "false" }
+	// 	]);
+
+	// const durationMenu = new StringSelectMenuBuilder()
+	// 	.setCustomId("feedbackDurationMenu")
+	// 	.setPlaceholder("Durée")
+	// 	.addOptions([
+	// 		{ label: "1 heure", value: "1" },
+	// 		{ label: "2 heures", value: "2" },
+	// 		{ label: "4 heures", value: "4" },
+	// 		{ label: "8 heures", value: "8" },
+	// 		{ label: "24 heures", value: "24" },
+	// 	]);
+	
+	const editTitleButton = new ButtonBuilder()
+		.setCustomId("feedbackEditTitleButton")
+		.setLabel("Modifier le titre du questionnaire")
+		.setStyle(ButtonStyle.Primary);
+
+	const isAnonymousButton = new ButtonBuilder()
+		.setCustomId("feedbackAnonymousButton")
+		.setLabel("Changer l'anonymat")
+		.setStyle(ButtonStyle.Primary);
+
+	const durationButton = new ButtonBuilder()
+		.setCustomId("feedbackDurationButton")
+		.setLabel("Changer la durée")
+		.setStyle(ButtonStyle.Primary);
+
+	return new ActionRowBuilder<ButtonBuilder>().addComponents(editTitleButton, isAnonymousButton, durationButton);
 }
