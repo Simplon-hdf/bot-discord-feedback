@@ -1,5 +1,5 @@
 import { MessageFlags, ModalSubmitInteraction } from "discord.js";
-import { pollEmbed, pollRow1 } from "../../utils/components";
+import { pollEmbed, pollRows, pollRow2 } from "../../utils/components";
 import { createPollObject } from "../../utils/poll-store";
 
 export async function createPoll(interaction: ModalSubmitInteraction) {
@@ -9,7 +9,7 @@ export async function createPoll(interaction: ModalSubmitInteraction) {
 	// Envoyer le sondage comme un message éphémère dans le canal
 	await interaction.reply({
 		embeds: [pollEmbed(poll)],
-		components: [pollRow1()],
+		components: pollRows(),
 		flags: MessageFlags.Ephemeral
 	});
 }
