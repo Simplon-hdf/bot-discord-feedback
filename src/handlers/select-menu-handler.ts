@@ -7,7 +7,7 @@ export async function handleSelectMenu(interaction: StringSelectMenuInteraction)
         await questionSelect(interaction);
     } else if (interaction.customId === "questionRemoveMenu") {
         await questionRemove(interaction);
-    } else if (interaction.customId.startsWith("multipleChoice_")) {
+    } else if (interaction.customId === "questionMultipleChoiceMenu") {
         await interaction.deferUpdate();
     }
 } 
