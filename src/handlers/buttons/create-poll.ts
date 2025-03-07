@@ -2,7 +2,7 @@ import { ActionRowBuilder, ButtonInteraction, ModalBuilder, TextInputBuilder, Te
 
 export async function createPoll(interaction: ButtonInteraction) {
     const titleInput = new TextInputBuilder()
-        .setLabel("Titre du sondage")
+        .setLabel("Titre du questionnaire")
         .setCustomId("pollTitle")
         .setStyle(TextInputStyle.Short)
         .setMaxLength(50);
@@ -11,8 +11,8 @@ export async function createPoll(interaction: ButtonInteraction) {
         .addComponents(titleInput);
 
     const modal = new ModalBuilder()
-        .setCustomId("pollTitleModal")
-        .setTitle('Titre du questionnaire')
+        .setCustomId("createPollTitleModal")
+        .setTitle('Créer un questionnaire')
         .addComponents(modalRow);
 
     await interaction.showModal(modal);

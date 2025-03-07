@@ -1,18 +1,7 @@
 import { ActionRowBuilder, ButtonInteraction, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } from "discord.js";
 
 export async function addQuestion(interaction: ButtonInteraction) {
-    try {
-        // Récupérer le message original
-        const message = interaction.message;
-        
-        if (!message) {
-            await interaction.reply({ 
-                content: "Erreur: Message introuvable", 
-                flags: MessageFlags.Ephemeral 
-            });
-            return;
-        }
-        
+    try {        
         // Créer un champ de texte pour la question
         const questionInput = new TextInputBuilder()
             .setCustomId("questionContent")

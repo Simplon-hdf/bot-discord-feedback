@@ -1,35 +1,29 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder, MessageFlags } from "discord.js";
+import { ButtonInteraction, MessageFlags } from "discord.js";
 import { logMessageTimer } from "../../utils/timer";
-import { pollRow1 } from "../../utils/components";
-
-// Déclarer le type pour les variables globales
-declare global {
-	var selectedQuestionsToRemove: string[] | undefined;
-}
+import { pollEmbed, pollRows } from "../../utils/components";
+import { getPollObject } from "../../utils/poll-store";
 
 export async function cancelRemoveQuestions(interaction: ButtonInteraction) {
 	try {
-		// Récupérer le message original
-		const message = interaction.message;
-		if (!message) {
+		const poll = getPollObject(interaction.user.id);
+		if (!poll) {
 			await interaction.reply({
-				content: "Erreur: Message introuvable",
+				content: "Impossible de trouver le sondage. Veuillez réessayer.",
 				flags: MessageFlags.Ephemeral
 			});
+			setTimeout(async () => {
+				await interaction.deleteReply();
+			}, logMessageTimer);
 			return;
 		}
-
-		// Récupérer l'embed existant
-		const embed = EmbedBuilder.from(message.embeds[0]);
-
 		// Réinitialiser les variables globales
-		global.selectedQuestionsToRemove = undefined;
+		poll.selectedQuestions.length = 0;
 
 		// Mettre à jour le message pour restaurer l'interface principale
 		await interaction.update({
 			content: null,
-			embeds: [embed],
-			components: [pollRow1()]
+			embeds: [pollEmbed(poll)],
+			components: pollRows()
 		});
 
 	} catch (error) {
