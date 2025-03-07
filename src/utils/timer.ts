@@ -1,0 +1,1 @@
+export const logMessageTimer = 5000;

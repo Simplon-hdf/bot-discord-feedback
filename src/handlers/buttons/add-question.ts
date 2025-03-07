@@ -1,0 +1,33 @@
+import { ActionRowBuilder, ButtonInteraction, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } from "discord.js";
+
+export async function addQuestion(interaction: ButtonInteraction) {
+    try {        
+        // Créer un champ de texte pour la question
+        const questionInput = new TextInputBuilder()
+            .setCustomId("questionContent")
+            .setLabel("Question")
+            .setStyle(TextInputStyle.Short)
+            .setPlaceholder("Entrez votre question ici")
+            .setRequired(true)
+            .setMaxLength(100);
+        
+        // Créer une ligne pour le champ de question
+        const questionRow = new ActionRowBuilder<TextInputBuilder>()
+            .addComponents(questionInput);
+        
+        // Créer la modale avec un customId simple
+        const modal = new ModalBuilder()
+            .setCustomId("addQuestionModal")
+            .setTitle("Ajouter une question")
+            .addComponents(questionRow);
+        
+        // Afficher la modale
+        await interaction.showModal(modal);
+    } catch (error) {
+        console.error("Erreur lors de l'affichage du modal d'ajout de question:", error);
+        await interaction.reply({ 
+            content: "Une erreur est survenue lors de l'ouverture du formulaire d'ajout de question. Veuillez réessayer.", 
+            flags: MessageFlags.Ephemeral 
+        });
+    }
+} 
