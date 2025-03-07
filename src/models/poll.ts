@@ -5,7 +5,6 @@ export interface Poll {
 	uuidAuthor: string;
 	uuidMessage: string;
 	isAnonymous: boolean;
-	isClosed: boolean;
 	duration: number;
 	questions: Question[];
 	selectedQuestions: number[];
