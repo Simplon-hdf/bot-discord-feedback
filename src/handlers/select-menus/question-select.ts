@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder, MessageFlags } from "discord.js";
 import { getPollObject } from "../../utils/poll-store";
 import { logMessageTimer } from "../../utils/timer";
-import { questionEmbed } from "../../utils/components";
+import { questionEmbed, pollEmbed, pollRows } from "../../utils/components";
 
 export async function questionSelect(interaction: StringSelectMenuInteraction) {
     try {
@@ -43,7 +43,7 @@ export async function questionSelect(interaction: StringSelectMenuInteraction) {
         // Créer les boutons pour les actions sur la question
         const editQuestionButton = new ButtonBuilder()
             .setCustomId(`editQuestionText_${questionIndex}`)
-            .setLabel("Modifier la question")
+            .setLabel("Modifier le titre de la question")
             .setStyle(ButtonStyle.Primary);
 
         const addProposalButton = new ButtonBuilder()
@@ -61,6 +61,12 @@ export async function questionSelect(interaction: StringSelectMenuInteraction) {
             .setLabel("Supprimer une proposition")
             .setStyle(ButtonStyle.Danger);
 
+        // Créer le bouton de retour
+        const backButton = new ButtonBuilder()
+            .setCustomId("backToMainMenu")
+            .setLabel("Retour à la liste des questions")
+            .setStyle(ButtonStyle.Secondary);
+
         // Créer le menu pour le choix multiple
         const multipleChoiceMenu = new StringSelectMenuBuilder()
             .setCustomId('questionMultipleChoiceMenu')
@@ -69,25 +75,12 @@ export async function questionSelect(interaction: StringSelectMenuInteraction) {
                 new StringSelectMenuOptionBuilder()
                     .setLabel("Oui")
                     .setValue('questionMultipleChoiceMenuYes')
-                    .setDescription("Permettre la sélection de plusieurs réponses")
-                    .setDefault(selectedQuestion.isMultipleAnswer === true),
+                    .setDescription("Permettre la sélection de plusieurs réponses"),
                 new StringSelectMenuOptionBuilder()
                     .setLabel("Non")
                     .setValue('questionMultipleChoiceMenuNo')
                     .setDescription("Limiter à une seule réponse")
-                    .setDefault(selectedQuestion.isMultipleAnswer === false)
             );
-
-        // Créer les boutons pour enregistrer ou annuler
-        const saveButton = new ButtonBuilder()
-            .setCustomId(`saveQuestion_${questionIndex}`)
-            .setLabel("Enregistrer la question")
-            .setStyle(ButtonStyle.Success);
-
-        const cancelButton = new ButtonBuilder()
-            .setCustomId("cancelEditQuestion")
-            .setLabel("Annuler")
-            .setStyle(ButtonStyle.Secondary);
 
         // Créer les lignes pour les composants
         const actionRow1 = new ActionRowBuilder<ButtonBuilder>()
@@ -97,7 +90,7 @@ export async function questionSelect(interaction: StringSelectMenuInteraction) {
             .addComponents(multipleChoiceMenu);
 
         const actionRow3 = new ActionRowBuilder<ButtonBuilder>()
-            .addComponents(saveButton, cancelButton);
+            .addComponents(backButton);
 
         // Mettre à jour le message avec les options de modification
         await interaction.update({
