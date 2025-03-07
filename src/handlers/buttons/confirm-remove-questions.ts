@@ -1,6 +1,6 @@
 import { ButtonInteraction, EmbedBuilder, MessageFlags } from "discord.js";
 import { logMessageTimer } from "../../utils/timer";
-import { pollEmbed, pollRow1 } from "../../utils/components";
+import { pollEmbed, pollRows } from "../../utils/components";
 import { getPollObject, removePollQuestion } from "../../utils/poll-store";
 
 export async function confirmRemoveQuestions(interaction: ButtonInteraction) {
@@ -16,7 +16,7 @@ export async function confirmRemoveQuestions(interaction: ButtonInteraction) {
 			}, logMessageTimer);
 			return;
 		}
-		const questions = poll.questions;
+		
 		// Vérifier si des questions ont été sélectionnées
 		if (poll.selectedQuestions.length === 0) {
 			await interaction.reply({
@@ -43,7 +43,7 @@ export async function confirmRemoveQuestions(interaction: ButtonInteraction) {
 		await interaction.update({
 			content: null,
 			embeds: [pollEmbed(poll)],
-			components: [pollRow1()]
+			components: pollRows()
 		});
 
 		const followUp = await interaction.followUp({
