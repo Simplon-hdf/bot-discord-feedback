@@ -8,8 +8,7 @@ export function createPollObject(userId: string, title: string): Poll {
         uuidMessage: "",
         uuidAuthor: userId,
         isAnonymous: false,
-        isClosed: false,
-        duration: 0,
+        duration: 1,
         questions: [],
         selectedQuestions: []
     };
