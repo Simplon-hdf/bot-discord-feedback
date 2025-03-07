@@ -1,7 +1,7 @@
 import { MessageFlags, ModalSubmitInteraction } from "discord.js";
 import { getPollObject } from "../../utils/poll-store";
 import { logMessageTimer } from "../../utils/timer";
-import { pollEmbed, pollRow1 } from "../../utils/components";
+import { pollEmbed, pollRows } from "../../utils/components";
 
 export async function editPollTitle(interaction: ModalSubmitInteraction) {
     const poll = getPollObject(interaction.user.id);
@@ -20,6 +20,6 @@ export async function editPollTitle(interaction: ModalSubmitInteraction) {
     await interaction.deferUpdate();
     await interaction.editReply({
         embeds: [pollEmbed(poll)],
-        components: [pollRow1()],
+        components: pollRows(),
     });
 }
