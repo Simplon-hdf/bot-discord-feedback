@@ -1,35 +1,26 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder, MessageFlags } from "discord.js";
+import { ButtonInteraction, MessageFlags } from "discord.js";
 import { logMessageTimer } from "../../utils/timer";
-import { pollRow1 } from "../../utils/components";
+import { pollEmbed, pollRow1 } from "../../utils/components";
+import { getPollObject } from "../../utils/poll-store";
 
 export async function cancelEditQuestion(interaction: ButtonInteraction) {
 	try {
-		// Récupérer le message original
-		const message = interaction.message;
-		if (!message) {
+
+		const poll = getPollObject(interaction.user.id);
+		if (!poll) {
 			await interaction.reply({
-				content: "Erreur: Message introuvable",
+				content: "Impossible de trouver le sondage. Veuillez réessayer.",
 				flags: MessageFlags.Ephemeral
 			});
+			setTimeout(async () => {
+				await interaction.deleteReply();
+			}, logMessageTimer);
 			return;
 		}
-
-		// Récupérer l'embed existant
-		const embed = EmbedBuilder.from(message.embeds[0]);
-
-		// S'assurer que le footer est présent
-		if (!embed.data.footer) {
-			embed.setFooter({
-				text: "Utilisez les boutons ci-dessous pour gérer les questions du sondage"
-			});
-		}
-
-		
-
 		// Mettre à jour le message avec un message de confirmation temporaire
 		await interaction.update({
 			content: null,
-			embeds: [embed],
+			embeds: [pollEmbed(poll)],
 			components: [pollRow1()]
 		});
 
