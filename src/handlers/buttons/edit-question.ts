@@ -49,10 +49,10 @@ export async function editQuestion(interaction: ButtonInteraction) {
             );
         });
 
-        // Créer le bouton d'annulation
-        const cancelButton = new ButtonBuilder()
-            .setCustomId("cancelEditQuestion")
-            .setLabel("Annuler")
+        // Créer le bouton de retour au menu principal
+        const backToMainButton = new ButtonBuilder()
+            .setCustomId("backToMainMenuButton")
+            .setLabel("Retour au menu principal")
             .setStyle(ButtonStyle.Secondary);
 
         // Créer les lignes pour les composants
@@ -60,7 +60,7 @@ export async function editQuestion(interaction: ButtonInteraction) {
             .addComponents(selectMenu);
 
         const buttonRow = new ActionRowBuilder<ButtonBuilder>()
-            .addComponents(cancelButton);
+            .addComponents(backToMainButton);
 
         // Mettre à jour le message avec le menu de sélection
         await interaction.update({

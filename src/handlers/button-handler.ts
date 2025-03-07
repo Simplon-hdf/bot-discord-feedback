@@ -2,67 +2,55 @@ import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedB
 import { createPoll } from "./buttons/create-poll";
 import { addQuestion } from "./buttons/add-question";
 import { editQuestion } from "./buttons/edit-question";
-import { cancelEditQuestion } from "./buttons/cancel-edit-question";
 import { removeQuestion } from "./buttons/remove-question";
-import { confirmRemoveQuestions } from "./buttons/confirm-remove-questions";
-import { cancelRemoveQuestions } from "./buttons/cancel-remove-questions";
 import { editPollTitle } from "./buttons/edit-poll-title";
 import { editPollAnonymous } from "./buttons/edit-poll-anonymous";
+import { createPollTemplate } from "./buttons/create-poll-template";
+import { saveTemplate } from "./buttons/save-template";
+import { editPollDuration } from "./buttons/edit-poll-duration";
+import { editQuestionText } from "./buttons/edit-question-text";
+import { addAnswer } from "./buttons/add-answer";
+import { backToQuestionList } from "./buttons/back-to-question-list";
+import { backToMainMenu } from "./buttons/back-to-main-menu";
 
 export async function handleButton(interaction: ButtonInteraction) {
 	if (interaction.customId === "feedbackCreateButton") {
 		await createPoll(interaction);
+	} else if (interaction.customId === "feedbackTemplateCreateButton") {
+		await createPollTemplate(interaction);
 	} else if (interaction.customId === "feedbackQuestionAddButton") {
 		await addQuestion(interaction);
 	} else if (interaction.customId === "feedbackQuestionEditButton") {
 		await editQuestion(interaction);
-	} else if (interaction.customId === "cancelEditQuestion") {
-		await cancelEditQuestion(interaction);
 	} else if (interaction.customId === "feedbackQuestionRemoveButton") {
 		await removeQuestion(interaction);
-	} else if (interaction.customId === "confirmRemoveQuestions") {
-		await confirmRemoveQuestions(interaction);
-	} else if (interaction.customId === "cancelRemoveQuestions") {
-		await cancelRemoveQuestions(interaction);
-	} else if (interaction.customId.startsWith("editQuestionText_")) {
-		// Gérer la modification du texte de la question (sera implémenté plus tard)
-		await interaction.reply({
-			content: "Fonctionnalité de modification du texte en cours d'implémentation",
-			flags: MessageFlags.Ephemeral
-		});
-	} else if (interaction.customId.startsWith("addProposal_")) {
-		// Gérer l'ajout d'une proposition (sera implémenté plus tard)
-		await interaction.reply({
-			content: "Fonctionnalité d'ajout de proposition en cours d'implémentation",
-			flags: MessageFlags.Ephemeral
-		});
-	} else if (interaction.customId.startsWith("editProposal_")) {
-		// Gérer la modification d'une proposition (sera implémenté plus tard)
-		await interaction.reply({
-			content: "Fonctionnalité de modification de proposition en cours d'implémentation",
-			flags: MessageFlags.Ephemeral
-		});
-	} else if (interaction.customId.startsWith("deleteProposal_")) {
-		// Gérer la suppression d'une proposition (sera implémenté plus tard)
-		await interaction.reply({
-			content: "Fonctionnalité de suppression de proposition en cours d'implémentation",
-			flags: MessageFlags.Ephemeral
-		});
-	} else if (interaction.customId.startsWith("saveQuestion_")) {
-		// Gérer l'enregistrement de la question (sera implémenté plus tard)
-		await interaction.reply({
-			content: "Fonctionnalité d'enregistrement en cours d'implémentation",
-			flags: MessageFlags.Ephemeral
-		});
-	} else if (interaction.customId.startsWith("cancelEdit_")) {
-		// Gérer l'annulation de la modification (sera implémenté plus tard)
-		await interaction.reply({
-			content: "Modification annulée",
-			flags: MessageFlags.Ephemeral
-		});
 	} else if (interaction.customId === "feedbackEditTitleButton") {
 		await editPollTitle(interaction);
 	} else if (interaction.customId === "feedbackAnonymousButton") {
 		await editPollAnonymous(interaction);
+	} else if (interaction.customId === "feedbackDurationButton") {
+		await editPollDuration(interaction);
+	} else if (interaction.customId === "saveTemplateButton") {
+		await saveTemplate(interaction);
+	} else if (interaction.customId === "backToMainMenu") {
+		await backToQuestionList(interaction);
+	} else if (interaction.customId === "backToMainMenuButton") {
+		await backToMainMenu(interaction);
+	} else if (interaction.customId.startsWith("editQuestionText_")) {
+		await editQuestionText(interaction);
+	} else if (interaction.customId.startsWith("addAnswer_")) {
+		await addAnswer(interaction);
+	} else if (interaction.customId.startsWith("editAnswer_")) {
+		// Gérer la modification d'une réponse (sera implémenté plus tard)
+		await interaction.reply({
+			content: "Fonctionnalité de modification de réponse en cours d'implémentation",
+			flags: MessageFlags.Ephemeral
+		});
+	} else if (interaction.customId.startsWith("deleteAnswer_")) {
+		// Gérer la suppression d'une réponse (sera implémenté plus tard)
+		await interaction.reply({
+			content: "Fonctionnalité de suppression de réponse en cours d'implémentation",
+			flags: MessageFlags.Ephemeral
+		});
 	}
 }

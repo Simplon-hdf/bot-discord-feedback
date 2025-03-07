@@ -1,11 +1,13 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder, MessageFlags } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, MessageFlags } from "discord.js";
 import { getPollObject } from "../../utils/poll-store";
-import { logMessageTimer } from "../../utils/timer";
 import { questionEmbed, pollEmbed, pollRows } from "../../utils/components";
+import { logMessageTimer } from "../../utils/timer";
 
-export async function questionSelect(interaction: StringSelectMenuInteraction) {
+export async function addAnswer(interaction: ModalSubmitInteraction) {
     try {
-
+        // Récupérer l'index de la question à partir de l'ID du modal
+        const questionIndex = parseInt(interaction.customId.replace("addAnswerModal_", ""));
+        
         const poll = getPollObject(interaction.user.id);
         if (!poll) {
             await interaction.reply({
@@ -17,29 +19,30 @@ export async function questionSelect(interaction: StringSelectMenuInteraction) {
             }, logMessageTimer);
             return;
         }
-
-        const questions = poll.questions;
-
-        // Récupérer l'index de la question sélectionnée
-        const selectedValue = interaction.values[0];
-        const questionIndex = parseInt(selectedValue.replace("question_", ""));
-
-        console.log(`Questions trouvées pour la sélection: ${questions.length}, index sélectionné: ${questionIndex}`);
-
+        
         // Vérifier que l'index est valide
-        if (questionIndex < 0 || questionIndex >= questions.length) {
+        if (questionIndex < 0 || questionIndex >= poll.questions.length) {
             await interaction.reply({
                 content: "Erreur: Question introuvable",
                 flags: MessageFlags.Ephemeral
             });
+            setTimeout(async () => {
+                await interaction.deleteReply();
+            }, logMessageTimer);
             return;
         }
-
-        // Récupérer la question sélectionnée
-        const selectedQuestion = questions[questionIndex];
-
-        console.log(`Question sélectionnée: ${selectedQuestion.content}`);
-
+        
+        // Récupérer la question
+        const question = poll.questions[questionIndex];
+        
+        // Récupérer le texte de la réponse
+        const answerText = interaction.fields.getTextInputValue("answerText");
+        
+        // Ajouter la réponse à la question
+        question.answers.push({
+            content: answerText
+        });
+        
         // Créer les boutons pour les actions sur la question
         const editQuestionButton = new ButtonBuilder()
             .setCustomId(`editQuestionText_${questionIndex}`)
@@ -91,18 +94,42 @@ export async function questionSelect(interaction: StringSelectMenuInteraction) {
 
         const actionRow3 = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(backButton);
-
-        // Mettre à jour le message avec les options de modification
-        await interaction.update({
-            content: `Modification de la question ${questionIndex + 1} : ${selectedQuestion.content}`,
-            embeds: [questionEmbed(selectedQuestion)],
+            
+        // Mettre à jour le message existant
+        await interaction.deferUpdate();
+        await interaction.editReply({
+            content: `Question ${questionIndex + 1} avec réponse ajoutée`,
+            embeds: [questionEmbed(question)],
             components: [actionRow1, actionRow2, actionRow3]
         });
-    } catch (error) {
-        console.error("Erreur lors de la sélection de question:", error);
-        await interaction.reply({
-            content: "Une erreur est survenue lors de la sélection de la question. Veuillez réessayer.",
+        
+        // Envoyer un message de confirmation qui sera supprimé après un certain temps
+        const followUp = await interaction.followUp({
+            content: `La réponse "${answerText}" a été ajoutée avec succès !`,
             flags: MessageFlags.Ephemeral
         });
+        
+        setTimeout(async () => {
+            await interaction.deleteReply(followUp);
+        }, logMessageTimer);
+    } catch (error) {
+        console.error("Erreur lors de l'ajout d'une réponse:", error);
+        
+        // Vérifier si l'interaction a déjà été répondue
+        if (!interaction.replied && !interaction.deferred) {
+            await interaction.reply({
+                content: "Une erreur est survenue lors de l'ajout d'une réponse. Veuillez réessayer.",
+                flags: MessageFlags.Ephemeral
+            });
+        } else {
+            try {
+                await interaction.followUp({
+                    content: "Une erreur est survenue lors de l'ajout d'une réponse. Veuillez réessayer.",
+                    flags: MessageFlags.Ephemeral
+                });
+            } catch (followUpError) {
+                console.error("Erreur lors de l'envoi du followUp:", followUpError);
+            }
+        }
     }
 } 

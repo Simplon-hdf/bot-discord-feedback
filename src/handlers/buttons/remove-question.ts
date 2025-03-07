@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, MessageFlags } from "discord.js";
+import { ActionRowBuilder, ButtonInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, MessageFlags } from "discord.js";
 import { logMessageTimer } from "../../utils/timer";
 import { getPollObject } from "../../utils/poll-store";
 import { pollEmbed } from "../../utils/components";
@@ -54,29 +54,15 @@ export async function removeQuestion(interaction: ButtonInteraction) {
             .setMaxValues(questions.length)
             .addOptions(options);
 
-        // Créer les boutons de confirmation et d'annulation
-        const confirmButton = new ButtonBuilder()
-            .setCustomId("confirmRemoveQuestions")
-            .setLabel("Confirmer la suppression")
-            .setStyle(ButtonStyle.Danger);
-
-        const cancelButton = new ButtonBuilder()
-            .setCustomId("cancelRemoveQuestions")
-            .setLabel("Annuler")
-            .setStyle(ButtonStyle.Secondary);
-
-        // Créer les lignes pour les composants
-        const actionRow1 = new ActionRowBuilder<StringSelectMenuBuilder>()
+        // Créer la ligne pour le menu de sélection
+        const actionRow = new ActionRowBuilder<StringSelectMenuBuilder>()
             .addComponents(selectMenu);
 
-        const actionRow2 = new ActionRowBuilder<ButtonBuilder>()
-            .addComponents(confirmButton, cancelButton);
-
-        // Mettre à jour le message avec les options de suppression
+        // Mettre à jour le message avec le menu de sélection
         await interaction.update({
-            content: "Sélectionnez les questions à supprimer, puis cliquez sur 'Confirmer la suppression'",
+            content: "Sélectionnez les questions à supprimer. La suppression sera effectuée immédiatement.",
             embeds: [pollEmbed(poll)],
-            components: [actionRow1, actionRow2]
+            components: [actionRow]
         });
     } catch (error) {
         console.error("Erreur lors de la préparation de la suppression de questions:", error);
